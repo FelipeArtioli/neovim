@@ -87,27 +87,11 @@ vim.o.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
--- Open compiler
-vim.api.nvim_set_keymap('n', '<F6>', '<cmd>CompilerOpen<cr>', { noremap = true, silent = true })
-
--- Redo last selected option
-vim.api.nvim_set_keymap(
-  'n',
-  '<S-F6>',
-  '<cmd>CompilerStop<cr>' -- (Optional, to dispose all tasks before redo)
-    .. '<cmd>CompilerRedo<cr>',
-  { noremap = true, silent = true }
-)
--- ######## COMPILER KEYMAPS ############
--- Toggle compiler results
-vim.api.nvim_set_keymap('n', '<S-F7>', '<cmd>CompilerToggleResults<cr>', { noremap = true, silent = true })
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
--- ######################################
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -393,27 +377,6 @@ require('lazy').setup({
       end, { desc = '[S]earch [N]eovim files' })
     end,
   },
-  --
-  {
-    'Zeioth/compiler.nvim',
-    cmd = { 'CompilerOpen', 'CompilerToggleResults', 'CompilerRedo' },
-    dependencies = { 'stevearc/overseer.nvim', 'nvim-telescope/telescope.nvim' },
-    opts = {},
-  },
-  {
-    'stevearc/overseer.nvim',
-    commit = '6271cab7ccc4ca840faa93f54440ffae3a3918bd',
-    cmd = { 'CompilerOpen', 'CompilerToggleResults', 'CompilerRedo' },
-    opts = {
-      task_list = {
-        direction = 'bottom',
-        min_height = 25,
-        max_height = 25,
-        default_detail = 1,
-      },
-    },
-  },
-  --
   {
     'kdheepak/lazygit.nvim',
     lazy = true,
@@ -810,7 +773,7 @@ require('lazy').setup({
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
-        cpp = { 'astyle' },
+        cpp = { 'clang-format' },
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
@@ -915,7 +878,42 @@ require('lazy').setup({
       signature = { enabled = true },
     },
   },
-
+  {
+    'rcarriga/nvim-dap-ui',
+    event = 'VeryLazy',
+    dependencies = 'mfussenegger/nvim-dap',
+    config = function()
+      local dap = require 'dap'
+      local dapui = require 'dapui'
+      dapui.setup()
+      dap.listeners.after.event_initialized['dapui_config'] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated['dapui_config'] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited['dapui_config'] = function()
+        dapui.close()
+      end
+    end,
+  },
+  {
+    'jay-babu/mason-nvim-dap.nvim',
+    event = 'VeryLazy',
+    dependencies = {
+      'williamboman/mason.nvim',
+      'mfussenegger/nvim-dap',
+    },
+    opts = {
+      handlers = {},
+    },
+  },
+  {
+    'mfussenegger/nvim-dap',
+    config = function(_, _)
+      require('core.utils').load_mappings 'dap'
+    end,
+  },
   {
     'catppuccin/nvim',
     name = 'catppuccin',
