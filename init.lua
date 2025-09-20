@@ -427,44 +427,6 @@ require('lazy').setup({
       require('alpha').setup(require('alpha.themes.theta').config)
     end,
   },
-  -- nvim v0.8.0
-
-  -- {
-  --   "LuxVim/nvim-luxmotion",
-  --   config = function()
-  --     require("luxmotion").setup({
-  --       cursor = {
-  --         duration = 250,
-  --         easing = "ease-out",
-  --         enabled = true,
-  --       },
-  --       scroll = {
-  --         duration = 400,
-  --         easing = "ease-out",
-  --         enabled = true,
-  --       },
-  --       performance = { enabled = false },
-  --       keymaps = {
-  --         cursor = true,
-  --         scroll = true,
-  --       },
-  --     })
-  --   end,
-  -- }
-  -- LSP Plugins
-  {
-    -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-    -- used for completion, annotations and signatures of Neovim apis
-    'folke/lazydev.nvim',
-    ft = 'lua',
-    opts = {
-      library = {
-        -- Load luvit types when the `vim.uv` word is found
-        { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
-      },
-    },
-  },
-  {},
   -- LSP Plugins
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
@@ -878,42 +840,7 @@ require('lazy').setup({
       signature = { enabled = true },
     },
   },
-  {
-    'rcarriga/nvim-dap-ui',
-    event = 'VeryLazy',
-    dependencies = 'mfussenegger/nvim-dap',
-    config = function()
-      local dap = require 'dap'
-      local dapui = require 'dapui'
-      dapui.setup()
-      dap.listeners.after.event_initialized['dapui_config'] = function()
-        dapui.open()
-      end
-      dap.listeners.before.event_terminated['dapui_config'] = function()
-        dapui.close()
-      end
-      dap.listeners.before.event_exited['dapui_config'] = function()
-        dapui.close()
-      end
-    end,
-  },
-  {
-    'jay-babu/mason-nvim-dap.nvim',
-    event = 'VeryLazy',
-    dependencies = {
-      'williamboman/mason.nvim',
-      'mfussenegger/nvim-dap',
-    },
-    opts = {
-      handlers = {},
-    },
-  },
-  {
-    'mfussenegger/nvim-dap',
-    config = function(_, _)
-      require('core.utils').load_mappings 'dap'
-    end,
-  },
+
   {
     'catppuccin/nvim',
     name = 'catppuccin',
